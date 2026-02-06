@@ -14,6 +14,8 @@ Tested on 1.21.10
 - Auto Sync on Join
 - Only Sync the player data if the player is online
 - placeholder : %scoreboarddb_value_{your_scoreboard}%
+- Selectors such as @a or @p | can be extended ex: @a[team=team_name]
+- Can auto save the actual scoreboard
 
 ## Exemple
 - you add 1 to the scoreboard money
