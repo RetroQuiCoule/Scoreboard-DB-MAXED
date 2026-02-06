@@ -48,8 +48,15 @@ public class ScoreboardDBCommand implements TabExecutor {
                 }
                 String serverName = ScoreboardDBPlugin.getInstance().getServerName();
                 try (Connection conn = dbManager.getDataSource().getConnection()) {
-                    String sql = "INSERT INTO scoreboard_data (server_name, scoreboard_name, string, value, push) VALUES (?, ?, ?, ?, ?) " +
-                            "ON CONFLICT(server_name, scoreboard_name, string) DO UPDATE SET value = excluded.value, push = excluded.push";
+
+                    // --- CORRECTION ICI POUR MYSQL / MARIADB ---
+                    String sql = "INSERT INTO scoreboard_data (server_name, scoreboard_name, string, value, push) " +
+                            "VALUES (?, ?, ?, ?, ?) " +
+                            "ON DUPLICATE KEY UPDATE " +
+                            "value = VALUES(value), " +
+                            "push = VALUES(push)";
+                    // -------------------------------------------
+
                     try (PreparedStatement ps = conn.prepareStatement(sql)) {
                         ps.setString(1, serverName);
                         ps.setString(2, scoreboard);
@@ -78,6 +85,7 @@ public class ScoreboardDBCommand implements TabExecutor {
                 key = args[2];
                 serverName = ScoreboardDBPlugin.getInstance().getServerName();
                 try (Connection conn = dbManager.getDataSource().getConnection()) {
+                    // SELECT fonctionne partout pareil, pas besoin de changer
                     String sql = "SELECT value FROM scoreboard_data WHERE server_name = ? AND scoreboard_name = ? AND string = ?";
                     try (PreparedStatement ps = conn.prepareStatement(sql)) {
                         ps.setString(1, serverName);
